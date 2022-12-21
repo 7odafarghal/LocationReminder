@@ -12,19 +12,52 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi;
-import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.notNullValue
-import org.hamcrest.MatcherAssert.assertThat
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Test
+import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-//Unit test the DAO
 @SmallTest
 class RemindersDaoTest {
 
-//    TODO: Add testing implementation to the RemindersDao.kt
+    private lateinit var database: RemindersDatabase
 
+    // Executes each task synchronously using Architecture Components.
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
+    @Before
+    fun initDb() {
+        database = Room.inMemoryDatabaseBuilder(
+            ApplicationProvider.getApplicationContext(),
+            RemindersDatabase::class.java
+        ).build()
+    }
+
+    @After
+    fun closeDb() = database.close()
+
+    @Test
+    fun insertReminderAndGetById() = runTest(UnconfinedTestDispatcher()) {
+        // given inserting a reminder
+        val reminder = ReminderDTO("title", "desc.", "here", 68.9, 68.9)
+        database.reminderDao().saveReminder(reminder)
+        // when getting the reminder by id from the database
+        val loadedReminder = database.reminderDao().getReminderById(reminder.id)
+        // then the loaded reminder is the same as the inserted reminder
+        assertEquals(true, loadedReminder == reminder)
+    }
+
+    @Test
+    fun getReminderReturnErrorNull() = runTest(UnconfinedTestDispatcher()) {
+        // given delete all reminders
+        database.reminderDao().deleteAllReminders()
+        // when get reminder by id
+        val reminder = database.reminderDao().getReminderById("foo")
+        // then should return null
+        assertEquals(null, reminder)
+    }
 }

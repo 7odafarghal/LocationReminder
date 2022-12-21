@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/reminderListFragment">
 
@@ -13,9 +14,10 @@
             app:destination="@id/saveReminderFragment" />
     </fragment>
     <activity
-        android:id="@+id/mainActivity"
-        android:name="com.udacity.project4.locationreminders.RemindersActivity"
-        android:label="MainActivity" />
+        android:id="@+id/authentication_activity"
+        android:name="com.udacity.project4.authentication.AuthenticationActivity"
+        android:label="MainActivity"
+        tools:layout="@layout/activity_authentication" />
     <fragment
         android:id="@+id/saveReminderFragment"
         android:name="com.udacity.project4.locationreminders.savereminder.SaveReminderFragment"

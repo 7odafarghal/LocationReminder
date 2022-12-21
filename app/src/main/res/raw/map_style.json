@@ -1,0 +1,163 @@
+[
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "saturation": 85
+      },
+      {
+        "visibility": "simplified"
+      },
+      {
+        "weight": 2.5
+      }
+    ]
+  },
+  {
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "saturation": 40
+      },
+      {
+        "visibility": "simplified"
+      },
+      {
+        "weight": 4
+      }
+    ]
+  },
+  {
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "lightness": 100
+      },
+      {
+        "weight": 8
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "saturation": -100
+      },
+      {
+        "lightness": -50
+      },
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "saturation": 50
+      },
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e4a0fd"
+      },
+      {
+        "saturation": 100
+      },
+      {
+        "lightness": 60
+      },
+      {
+        "weight": 0.5
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "saturation": 100
+      },
+      {
+        "lightness": 55
+      },
+      {
+        "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "lightness": -60
+      },
+      {
+        "weight": 2.5
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ffffff"
+      },
+      {
+        "saturation": -40
+      },
+      {
+        "lightness": 70
+      },
+      {
+        "weight": 1.5
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#424fff"
+      },
+      {
+        "saturation": -25
+      },
+      {
+        "lightness": -5
+      },
+      {
+        "visibility": "simplified"
+      }
+    ]
+  }
+]
