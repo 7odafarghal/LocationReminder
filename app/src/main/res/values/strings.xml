@@ -33,6 +33,7 @@
     <string name="welcome">Welcome</string>
     <string name="enable_notifications">Please enable notifications</string>
     <string name="err_enter_title">Please enter title</string>
+    <string name="err_enter_description">Please enter description</string>
     <string name="err_select_location">Please select location</string>
 
     <!-- Error strings -->

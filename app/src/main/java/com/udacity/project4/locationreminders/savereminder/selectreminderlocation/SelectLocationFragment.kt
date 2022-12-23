@@ -3,7 +3,9 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.net.Uri
@@ -17,12 +19,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
+import com.google.android.gms.location.Priority.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
@@ -34,6 +39,7 @@ import kotlinx.android.synthetic.main.activity_reminders.*
 import org.koin.android.ext.android.inject
 import java.util.*
 
+const val TURN_LOCATION_REQUEST_CODE = 68
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
@@ -107,7 +113,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map.setPoiClick()
         map.setLongClick()
         map.setMapStyle()
-        if (PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            askForLocationProviderOn()
             map.isMyLocationEnabled = true
             LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation.addOnSuccessListener{
                 it?.let { map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), 15f))}
@@ -149,6 +156,39 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             Log.e("TAG", "Can't find style. Error: ", e)
         }
     }
+    @SuppressLint("MissingPermission")
+    private fun askForLocationProviderOn() {
+        val locationRequest = LocationRequest.Builder(PRIORITY_BALANCED_POWER_ACCURACY, 60*1000)
+            .build()
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+            .setAlwaysShow(true)
+
+        val client: SettingsClient = LocationServices.getSettingsClient(requireActivity())
+        val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
+
+        task.addOnCompleteListener { locationSettingsResponse ->
+            map.isMyLocationEnabled = true
+            LocationServices.getFusedLocationProviderClient(requireActivity()).lastLocation.addOnSuccessListener{
+                it?.let { map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), 15f))}}
+        }.addOnFailureListener { exception ->
+            exception.printStackTrace()
+            if (exception is ResolvableApiException) {
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    exception.startResolutionForResult(requireActivity(), TURN_LOCATION_REQUEST_CODE)
+                } catch (_: IntentSender.SendIntentException) {}
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+            if (resultCode != Activity.RESULT_OK) showLocationErrorSnack()
+    }
 
     private fun showPermissionErrorSnack() {
         Snackbar.make(
@@ -162,5 +202,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             })
         }.show()
+    }
+
+    private fun showLocationErrorSnack() {
+        Snackbar.make(
+            requireView(),
+            R.string.location_required_error,
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 }

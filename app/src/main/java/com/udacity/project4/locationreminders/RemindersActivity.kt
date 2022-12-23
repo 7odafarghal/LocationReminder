@@ -13,18 +13,21 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.authentication.AuthenticationActivity
 import kotlinx.android.synthetic.main.activity_reminders.*
+import org.koin.android.ext.android.inject
 
 /**
  * The RemindersActivity that holds the reminders fragments
  */
 class RemindersActivity : AppCompatActivity() {
 
+    val auth: FirebaseAuth by inject()
     private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     private val runningTOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
@@ -59,23 +62,22 @@ class RemindersActivity : AppCompatActivity() {
         }.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStart() {
         super.onStart()
-        if (Firebase.auth.currentUser == null) {
+        if (auth.currentUser == null) {
             val intent = Intent(this, AuthenticationActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
             finish()
         }
+        if (runningTOrLater) notificationPermissionLauncher.launch(POST_NOTIFICATIONS)
+        else locationPermissionLauncher.launch(ACCESS_FINE_LOCATION)
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reminders)
-        if (runningTOrLater) notificationPermissionLauncher.launch(POST_NOTIFICATIONS)
-        else locationPermissionLauncher.launch(ACCESS_FINE_LOCATION)
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

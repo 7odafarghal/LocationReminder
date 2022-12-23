@@ -1,8 +1,10 @@
 package com.udacity.project4.locationreminders.savereminder
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
@@ -27,6 +30,7 @@ class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with another fragment
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
+    private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
@@ -85,6 +89,15 @@ class SaveReminderFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun onResume() {
+        super.onResume()
+        val backLocationGranted  = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        val foreLocationGranted  = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        binding.saveReminder.isEnabled = if (runningQOrLater) backLocationGranted else foreLocationGranted
+        binding.selectLocation.isEnabled = if (runningQOrLater) backLocationGranted else foreLocationGranted
     }
 
     override fun onDestroy() {

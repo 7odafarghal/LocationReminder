@@ -73,6 +73,12 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             return false
         }
 
+        // don't force user to enter a description to make adding reminders simple and easy
+        if(reminderData.description == null) {
+            showSnackBarInt.value = R.string.err_enter_description
+            return false
+        }
+
         if (reminderData.location.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_select_location
             return false

@@ -1,8 +1,13 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
@@ -20,6 +25,8 @@ class ReminderListFragment : BaseFragment() {
 
     override val _viewModel: RemindersListViewModel by viewModel()
     private lateinit var binding: FragmentRemindersBinding
+    private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_reminders, container, false)
         binding.viewModel = _viewModel
@@ -39,8 +46,13 @@ class ReminderListFragment : BaseFragment() {
         binding.addReminderFAB.setOnClickListener { navigateToAddReminder() }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onResume() {
         super.onResume()
+        // enable fab only if permission is granted
+        val backLocationGranted  = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        val foreLocationGranted  = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        binding.addReminderFAB.isEnabled = if (runningQOrLater) backLocationGranted else foreLocationGranted
         //load the reminders list on the ui
         _viewModel.loadReminders()
     }

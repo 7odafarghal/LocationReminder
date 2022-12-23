@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders
 
 import android.app.Application
 import androidx.test.core.app.ApplicationProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
@@ -13,6 +14,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import org.mockito.Mockito.mock
 
 class MainKoinRule(): TestWatcher() {
     override fun starting(description: Description) {
@@ -35,6 +37,7 @@ class MainKoinRule(): TestWatcher() {
             }
             single { FakeDataSource() as ReminderDataSource }
             single { LocalDB.createRemindersDao(appContext) }
+            single { mock(FirebaseAuth::class.java) }
         }
         startKoin {
             modules(listOf(myModule))

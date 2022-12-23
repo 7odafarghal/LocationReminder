@@ -49,7 +49,7 @@ class RemindersListViewModelTest {
     @Test
     fun shouldReturnError() = runTest {
         // given a view model with a corrupt data source
-        val viewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), FakeDataSource(null))
+        val viewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), FakeDataSource(shouldReturnError = true))
         // when loading reminders
         viewModel.loadReminders()
         // then should show error message
